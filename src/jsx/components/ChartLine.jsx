@@ -11,9 +11,6 @@ import highchartsExportData from 'highcharts/modules/export-data';
 import 'intersection-observer';
 import { useIsVisible } from 'react-is-visible';
 
-// Load helpers.
-import roundNr from '../helpers/RoundNr.js';
-
 highchartsAccessibility(Highcharts);
 highchartsExporting(Highcharts);
 highchartsExportData(Highcharts);
@@ -44,7 +41,7 @@ Highcharts.SVGRenderer.prototype.symbols.download = (x, y, w, h) => {
 };
 
 function LineChart({
-  allow_decimals, data, data_decimals, export_title_margin, idx, labels, line_width, note, show_first_label, source, subtitle, suffix, tick_interval, title, xlabel, x_labels_month_year, ymax, ymin, ystep
+  allow_decimals, data, idx, labels, line_width, note, show_first_label, source, subtitle, suffix, title, xlabel, ymax, ymin, ystep
 }) {
   const chartRef = useRef();
   const isVisible = useIsVisible(chartRef, { once: true });
@@ -213,7 +210,7 @@ function LineChart({
       },
       title: {
         align: 'left',
-        margin: export_title_margin,
+        margin: 80,
         widthAdjust: -160,
         style: {
           color: '#000',
@@ -234,9 +231,9 @@ function LineChart({
           // eslint-disable-next-line react/no-this-in-sfc
           const values = this.points.filter(point => point.series.name !== '').map(point => [point.series.name.split(' (')[0], point.y, point.color]);
           const rows = [];
-          rows.push(values.map(point => `<div style="color: ${point[2]}"><span class="tooltip_label">${(point[0]) ? `${point[0]}: ` : ''}</span><span class="tooltip_value">${roundNr(point[1], data_decimals)}${suffix}</span></div>`).join(''));
+          rows.push(values.map(point => `<div><span class="tooltip_label">${(point[0]) ? `${point[0]}: ` : ''}</span><span class="tooltip_value">${point[1]}${suffix}</span></div>`).join(''));
           // eslint-disable-next-line react/no-this-in-sfc
-          return `<div class="tooltip_container"><h3 class="tooltip_header">${xlabel} ${this.x}</h3>${rows}</div>`;
+          return `<div class="tooltip_container"><h3 class="tooltip_header">${xlabel} ${(new Date(this.x)).getFullYear()}</h3>${rows}</div>`;
         },
         shadow: false,
         shared: true,
@@ -247,89 +244,31 @@ function LineChart({
           description: xlabel
         },
         allowDecimals: false,
-        categories: data[0].labels,
         crosshair: {
-          color: 'transparent',
+          color: '#ccc',
           width: 1
         },
         labels: {
-          allowOverlap: false,
-          formatter() {
-            if (x_labels_month_year) {
-              // eslint-disable-next-line react/no-this-in-sfc
-              if (new Date(this.value).toLocaleString([], { month: 'short' }) === 'Jan') {
-              // eslint-disable-next-line react/no-this-in-sfc
-                return `${new Date(this.value).toLocaleString([], { month: 'short' })}<br />${(new Date(this.value)).getFullYear()}`;
-              }
-              // eslint-disable-next-line react/no-this-in-sfc
-              return (new Date(this.value).toLocaleString([], { month: 'short' }));
-            }
-            // eslint-disable-next-line react/no-this-in-sfc
-            return this.value;
-          },
-          step: 1,
           enabled: true,
-          rotation: 0,
-          reserveSpace: true,
+          formatter: (el) => ((el.chart.series[0].xData).includes(el.pos) ? (new Date(el.pos)).getFullYear() : ''),
           style: {
             color: 'rgba(0, 0, 0, 0.8)',
             fontFamily: 'Roboto',
-            fontSize: '16px',
+            fontSize: '14px',
             fontWeight: 400
           },
-          type: 'datetime',
           useHTML: false,
           y: 30
         },
-        lineColor: 'transparent',
+        lineColor: '#ccc',
         lineWidth: 0,
-        plotBands: (idx === '9' || idx === '10') ? [{
-          color: '#eee',
-          from: (idx === '9' ? 30.7 : 30.7),
-          to: 100,
-          label: {
-            align: 'left',
-            style: {
-              color: 'rgba(0, 0, 0, 0.8)',
-              fontFamily: 'Roboto',
-              fontSize: '16px',
-              verticalAlign: 'bottom',
-              fontWeight: 700
-            },
-            rotation: 0,
-            text: '',
-            x: 5,
-            y: 20
-          }
-        }] : [],
-        plotLines: (idx === '9' || idx === '10') ? [{
-          color: '#72bf44',
-          label: {
-            align: 'right',
-            style: {
-              color: 'rgba(0, 0, 0, 0.8)',
-              fontFamily: 'Roboto',
-              fontSize: '16px',
-              fontWeight: 700,
-            },
-            rotation: 0,
-            verticalAlign: 'bottom',
-            text: 'Initiative brokered<br />on 22 July 2022',
-            x: -10,
-            y: -50
-          },
-          zIndex: 10,
-          value: (idx === '9' ? 30.7 : 30.7),
-          width: 3
-        }] : [],
-        rotation: 0,
         opposite: false,
-        tickInterval: tick_interval,
-        tickWidth: 1,
+        tickInterval: 1000 * 60 * 60 * 24 * 365,
         tickLength: 5,
+        tickWidth: 1,
+        type: 'datetime',
         title: {
           enabled: true,
-          offset: 40,
           style: {
             color: 'rgba(0, 0, 0, 0.8)',
             fontFamily: 'Roboto',
@@ -395,7 +334,7 @@ function LineChart({
       }
     });
     chartRef.current.querySelector(`#chartIdx${idx}`).style.opacity = 1;
-  }, [allow_decimals, data, data_decimals, export_title_margin, idx, labels, line_width, note, show_first_label, source, subtitle, suffix, tick_interval, title, xlabel, x_labels_month_year, ymax, ymin, ystep]);
+  }, [allow_decimals, data, idx, labels, line_width, note, show_first_label, source, subtitle, suffix, title, xlabel, ymax, ymin, ystep]);
 
   useEffect(() => {
     if (isVisible === true) {
@@ -418,8 +357,6 @@ function LineChart({
 LineChart.propTypes = {
   allow_decimals: PropTypes.bool,
   data: PropTypes.instanceOf(Array).isRequired,
-  data_decimals: PropTypes.number.isRequired,
-  export_title_margin: PropTypes.number,
   idx: PropTypes.string.isRequired,
   labels: PropTypes.bool,
   line_width: PropTypes.number,
@@ -428,10 +365,8 @@ LineChart.propTypes = {
   source: PropTypes.string.isRequired,
   subtitle: PropTypes.string,
   suffix: PropTypes.string,
-  tick_interval: PropTypes.number,
   title: PropTypes.string.isRequired,
   xlabel: PropTypes.string,
-  x_labels_month_year: PropTypes.bool,
   ymax: PropTypes.number,
   ymin: PropTypes.number,
   ystep: PropTypes.number
@@ -439,16 +374,13 @@ LineChart.propTypes = {
 
 LineChart.defaultProps = {
   allow_decimals: true,
-  export_title_margin: 0,
   labels: true,
   line_width: 5,
   note: false,
   show_first_label: true,
   subtitle: false,
   suffix: '',
-  tick_interval: 1,
   xlabel: '',
-  x_labels_month_year: false,
   ymax: undefined,
   ymin: undefined,
   ystep: 1

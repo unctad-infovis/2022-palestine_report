@@ -16,16 +16,18 @@ function App() {
   const [dataFigure, setDataFigure] = useState(false);
   const [selectedData, setSelectedData] = useState(1);
 
-  const cleanData = useCallback((data) => (data.map((el, i) => ({
-    data: Object.values(el).map(val => parseFloat(val)).filter(val => !Number.isNaN(val)),
-    labels: Object.keys(el).filter(val => val !== 'Name').map(val => parseInt(val, 10)),
-    visible: (selectedData === i),
-    showInLegend: (selectedData === i),
-    name: el.Name
-  }))), [selectedData]);
+  const cleanData = useCallback((data) => (data.map((el, i) => {
+    const values = Object.keys(el).filter(val => val !== 'Name').map(val => Date.UTC(parseInt(val, 10), 0, 1));
+    const labels = Object.values(el).map(val => parseFloat(val)).filter(val => !Number.isNaN(val));
+    return {
+      data: values.map((e, j) => [e, labels[j]]),
+      visible: (selectedData === i),
+      showInLegend: (selectedData === i),
+      name: el.Name
+    };
+  })), [selectedData]);
 
   const changeData = (i) => {
-    console.log(i);
     setSelectedData(parseInt(i, 10));
   };
 
@@ -45,8 +47,6 @@ function App() {
       }
       return false;
     });
-
-    console.log((html));
     setMenuItems(html);
   }, []);
 
