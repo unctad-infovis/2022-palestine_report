@@ -8,7 +8,7 @@ import CSVtoJSON from './helpers/CSVtoJSON.js';
 
 import ChartLine from './components/ChartLine.jsx';
 
-// const appID = '#app-root-2022-palestine_economy';
+// const appID = '#app-root-2022-palestine_report';
 
 function App() {
   // Data states.

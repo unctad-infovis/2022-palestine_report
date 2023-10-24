@@ -4,6 +4,6 @@ import { createRoot } from 'react-dom/client';
 
 import App from './jsx/App.jsx';
 
-const container = document.getElementById('app-root-2022-palestine_economy');
+const container = document.getElementById('app-root-2022-palestine_report');
 const root = createRoot(container);
 root.render(<App />);
