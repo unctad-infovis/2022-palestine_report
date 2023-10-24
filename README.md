@@ -1,4 +1,4 @@
-# 2022-palestine_economy
+# 2022-palestine_report
 
 **Live demo** https://unctad-infovis.github.io/2022-palestine_report/
 
