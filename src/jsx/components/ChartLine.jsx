@@ -41,7 +41,7 @@ Highcharts.SVGRenderer.prototype.symbols.download = (x, y, w, h) => {
 };
 
 function LineChart({
-  allow_decimals, data, idx, labels, line_width, note, show_first_label, source, subtitle, suffix, title, xlabel, ymax, ymin, ystep
+  allow_decimals = true, data, idx, labels = true, line_width = 5, note = false, show_first_label = true, source, subtitle = false, suffix = '', title, xlabel = '', ymax = undefined, ymin = undefined, ystep = 1
 }) {
   const chartRef = useRef();
   const isVisible = useIsVisible(chartRef, { once: true });
@@ -370,20 +370,6 @@ LineChart.propTypes = {
   ymax: PropTypes.number,
   ymin: PropTypes.number,
   ystep: PropTypes.number
-};
-
-LineChart.defaultProps = {
-  allow_decimals: true,
-  labels: true,
-  line_width: 5,
-  note: false,
-  show_first_label: true,
-  subtitle: false,
-  suffix: '',
-  xlabel: '',
-  ymax: undefined,
-  ymin: undefined,
-  ystep: 1
 };
 
 export default LineChart;
